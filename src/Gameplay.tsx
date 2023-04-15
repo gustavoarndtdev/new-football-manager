@@ -22,15 +22,17 @@ const Gameplay = () => {
   };
 
   const gameLogic = (): void => {
-    const randomNumber=Math.floor(Math.random() * 100) + 1;
-    const playerOneNumbers=[1,2,3]
-    const playerTwoNumbers=[98,99,100]
-    console.log('randomNumber',randomNumber)
-    if(playerOneNumbers.includes(randomNumber)){
-      setScorePlayerOne(state=>state+1)
-    }
-    if(playerTwoNumbers.includes(randomNumber)){
-      setScorePlayerTwo(state=>state+1)
+    const probabilidadeGol = 0.03; // Probabilidade de gol por minuto
+    const probabilidadeVisitante = 0.4; // Probabilidade de gol ser do time visitante
+    const dice1 = Math.random();
+    const dice2 = Math.random();
+    console.log("dice1", dice1, "dice2", dice2);
+    if (dice1 < probabilidadeGol) {
+      if (dice2 > probabilidadeVisitante) {
+        setScorePlayerOne((state) => state + 1);
+      } else {
+        setScorePlayerTwo((state) => state + 1);
+      }
     }
   };
 
@@ -38,8 +40,16 @@ const Gameplay = () => {
     if (timeLeft < 45) {
       gameLogic();
     }
-    
   }, [timeLeft]);
+
+  useEffect(() => {
+    console.log(
+      "scorePlayerOne",
+      scorePlayerOne,
+      "scorePlayerTwo",
+      scorePlayerTwo
+    );
+  }, [scorePlayerOne, scorePlayerTwo]);
 
   return (
     <GameplayContainer>
