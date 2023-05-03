@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import CountdownTimer from "./CountdownTimer";
+import { ITeam, mockTeamOne, mockTeamTwo } from "./mockData";
 
 const Gameplay = () => {
   const [count, setCount] = useState<boolean>(false);
@@ -21,17 +22,44 @@ const Gameplay = () => {
     setScorePlayerTwo(0);
   };
 
+  const getTeamSkills=(team:ITeam):any=>{
+    const teamAttackArray=team.players.map((player)=>player.skills.attack)
+    const teamDefenseArray=team.players.map((player)=>player.skills.defense)
+    const sumOfTeamAttack=teamAttackArray.reduce((acc, num) => acc + num, 0)
+    const sumOfTeamDefense=teamDefenseArray.reduce((acc, num) => acc + num, 0)
+    const attackAverage=sumOfTeamAttack/teamAttackArray.length
+    const defenseAverage=sumOfTeamDefense/teamDefenseArray.length
+    return {
+      attack:attackAverage/100,
+      defense:defenseAverage/100
+    }
+  }
+
   const gameLogic = (): void => {
-    const probabilidadeGol = 0.03; // Probabilidade de gol por minuto
+    const teamOneAverageSkills=getTeamSkills(mockTeamOne)
+    const teamTwoAverageSkills=getTeamSkills(mockTeamTwo)
+    console.log('teamOneAverageSkills',teamOneAverageSkills)
+    console.log('teamTwoAverageSkills',teamTwoAverageSkills)
+    const defenseOne = teamOneAverageSkills.defense;
+    const defenseTwo = teamTwoAverageSkills.defense;
+    const attackOne = teamOneAverageSkills.attack;
+    const attackTwo = teamTwoAverageSkills.attack;
+    const probabilidadeGol = 0.03155; // Probabilidade de gol por minuto
     const probabilidadeVisitante = 0.4; // Probabilidade de gol ser do time visitante
     const dice1 = Math.random();
     const dice2 = Math.random();
+    const diceDefence = Math.random();
+    const diceAttack = Math.random();
     console.log("dice1", dice1, "dice2", dice2);
     if (dice1 < probabilidadeGol) {
       if (dice2 > probabilidadeVisitante) {
-        setScorePlayerOne((state) => state + 1);
+        if (attackOne * diceAttack > defenseTwo * diceDefence) {
+          setScorePlayerOne((state) => state + 1);
+        }
       } else {
-        setScorePlayerTwo((state) => state + 1);
+        if (attackTwo * diceAttack > defenseOne * diceDefence) {
+          setScorePlayerTwo((state) => state + 1);
+        }
       }
     }
   };
